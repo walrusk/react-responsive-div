@@ -1,6 +1,6 @@
 {
   "name": "@walrusk/react-responsive-div",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Responsive React container using breakpoints based on container (not viewport) width.",
   "homepage": "https://github.com/walrusk/react-responsive-div#readme",
   "author": "Rob Norman <walrusk@gmail.com> (https://magnetnet.net)",
@@ -21,8 +21,8 @@
     "babel-preset-stage-2": "^6.24.1"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/walrusk/react-responsive-div.git"
+    "type": "git",
+    "url": "https://github.com/walrusk/react-responsive-div.git"
   },
   "browserslist": [
     ">0.2%",

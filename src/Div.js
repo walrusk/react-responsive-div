@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef, useEffect, useMemo, useCallback} from 'react';
 
 // Default breakpoints that should apply to all observed
 // elements that don't define their own custom breakpoints.
@@ -18,26 +18,38 @@ export default function Div({ breakpoints: customBreakpoints, ...props }) {
   );
 }
 
-export function useResizeObserver(breakpoints, containerRef) {
-    useEffect(() => {
-      if (window.ResizeObserver) {
-        const ro = new window.ResizeObserver((entries) => {
-          entries.forEach((entry) => {
-            // Update the matching breakpoints on the observed element.
-            Object.keys(breakpoints).forEach(breakpoint => {
-              const minWidth = breakpoints[breakpoint];
-              if (entry.contentRect.width >= minWidth) {
-                entry.target.classList.add(breakpoint);
-              } else {
-                entry.target.classList.remove(breakpoint);
-              }
-            });
-          });
-        });
-        ro.observe(containerRef.current);
-        return () => ro.disconnect();
-      } else if (process && process.env.NODE_ENV === 'development') {
-        console.warn('Resize observer not supported');
+export function useResizeObserver(breakpointObj, containerRef) {
+  // Sort breakpoints
+  const breakpoints = useMemo(() => Object.keys(breakpointObj).sort((a,b) => {
+    if (breakpointObj[a] < breakpointObj[b]) return -1;
+    if (breakpointObj[a] > breakpointObj[b]) return 1;
+    return 0;
+  }), [breakpointObj]);
+  const getBreakpoint = useCallback((width) => {
+    return breakpoints.find((bp, i) => {
+      const min = breakpointObj[bp];
+      const max = breakpointObj[breakpoints[i+1]];
+      if (width >= min && (!max || width < max)) {
+        return true;
       }
-    }, []);
+    });
+  }, [breakpoints, breakpointObj]);
+  useEffect(() => {
+    if (window.ResizeObserver) {
+      const ro = new window.ResizeObserver((entries) => {
+        entries.forEach((entry) => {
+          // Update breakpoints
+          const breakpoint = getBreakpoint(entry.contentRect.width);
+          if (!entry.target.classList.contains(breakpoint)) {
+            entry.target.classList.remove(...breakpoints);
+            entry.target.classList.add(breakpoint);
+          } // else it already contains the class we want :+1:
+        });
+      });
+      ro.observe(containerRef.current);
+      return () => ro.disconnect();
+    } else if (process && process.env.NODE_ENV === 'development') {
+      console.warn('Resize observer not supported');
+    }
+  }, [breakpoints]);
 }

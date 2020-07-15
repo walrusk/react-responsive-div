@@ -2,7 +2,7 @@
 
 Responsive React container using breakpoints based on container (not viewport) width.
 
-The core of https://github.com/philipwalton/responsive-components ported to React
+The core of https://github.com/philipwalton/responsive-components ported to React with slight behaviour modifications and
 using hooks to manage creation/cleanup of observers for each container instead of using a global observer.
 
 ### Default breakpoints:
@@ -50,13 +50,14 @@ const customBreakpoints = {
 ```html
 <div class="SM">... content ...</div>
 or
-<div class="SM MD">... content ...</div>
+<div class="MD">... content ...</div>
 or
-<div class="SM MD LG">... content ...</div>
+<div class="LG">... content ...</div>
 or
-<div class="SM MD LG XL">... content ...</div>
+<div class="XL">... content ...</div>
 ```
 
-## Notes:
-
-Considered adjusting behaviour to only set class of current breakpoint e.g. medium being `MD` instead of `SM MD`. May add a prop for this in future but not sure yet if this is actually needed. In most cases in CSS you want to target both and you can target small only with this pattern using `.SM:not(.MD)`.
+## Apply CSS rules based on container size using classes instead of using media queries based on viewport size.   
+```css
+.SM .column { flex:0 0 100%; }
+```
