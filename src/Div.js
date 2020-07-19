@@ -29,7 +29,7 @@ export function useResizeObserver(breakpointObj, containerRef) {
     return breakpoints.find((bp, i) => {
       const min = breakpointObj[bp];
       const max = breakpointObj[breakpoints[i+1]];
-      if (width >= min && (!max || width < max)) {
+      if ((i === 0 || width >= min) && (!max || width < max)) {
         return true;
       }
     });
@@ -38,12 +38,11 @@ export function useResizeObserver(breakpointObj, containerRef) {
     if (window.ResizeObserver) {
       const ro = new window.ResizeObserver((entries) => {
         entries.forEach((entry) => {
-          // Update breakpoints
           const breakpoint = getBreakpoint(entry.contentRect.width);
-          if (!entry.target.classList.contains(breakpoint)) {
+          if (breakpoint && !entry.target.classList.contains(breakpoint)) {
             entry.target.classList.remove(...breakpoints);
             entry.target.classList.add(breakpoint);
-          } // else it already contains the class we want :+1:
+          }
         });
       });
       ro.observe(containerRef.current);
